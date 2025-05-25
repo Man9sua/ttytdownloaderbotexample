@@ -10,17 +10,14 @@ from telegram.ext import (
 )
 from yt_dlp import YoutubeDL
 
-# Настройка логирования
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
 
-# Проверка наличия FFmpeg
 def is_ffmpeg_installed():
     return os.system("ffmpeg -version") == 0
 
-# Функция для команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         "Добро пожаловать! Данный бот может скачать видео с:\n"
@@ -31,7 +28,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "Связаться с автором: @FlexGentle"
     )
 
-# Функция для проверки платформы
 def detect_platform(url: str) -> str:
     if "tiktok.com" in url:
         return "tiktok"
@@ -41,7 +37,6 @@ def detect_platform(url: str) -> str:
         return "instagram"
     return "unknown"
 
-# Функция для обработки ссылок
 async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     url = update.message.text.strip()
     platform = detect_platform(url)
@@ -50,7 +45,7 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text("Это не похоже на поддерживаемую ссылку. Попробуйте TikTok, YouTube или Instagram Reels.")
         return
 
-    # Проверка FFmpeg
+
     if not is_ffmpeg_installed():
         await update.message.reply_text("FFmpeg не установлен. Установите его для обработки видео.")
         return
@@ -68,10 +63,10 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
-            # Проверка условий
+
             if platform == "youtube":
-                file_size_estimate = info.get("filesize_approx", 0)  # Оценка размера
-                if file_size_estimate > 50 * 1024 * 1024:  # 50 MB
+                file_size_estimate = info.get("filesize_approx", 0) 
+                if file_size_estimate > 50 * 1024 * 1024:  # 50MB
                     await update.message.reply_text(
                         f"Видео слишком большое для отправки (примерно {file_size_estimate / (1024 * 1024):.2f} МБ)."
                     )
@@ -80,12 +75,12 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             filename = ydl.prepare_filename(info)
             ydl.download([url])
 
-            # Получение качества видео
+   
             video_format = info.get("format", "неизвестный формат")
             resolution = info.get("height", "неизвестная высота")
             fps = info.get("fps", "неизвестная частота кадров")
 
-            # Отправка видео
+
             with open(filename, 'rb') as video_file:
                 await context.bot.send_video(
                     chat_id=update.effective_chat.id,
