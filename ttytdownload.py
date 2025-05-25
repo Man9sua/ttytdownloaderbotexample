@@ -99,7 +99,7 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text(f"Произошла ошибка.\nПроверьте ссылку и попробуйте снова.\nНапоминаем снова что бот может скачивать только видео!")
 
 def main():
-    TOKEN = "7364124522:AAHIxyPi2s4djtwSwa63VykpI09QM2XD59E"
+    TOKEN = "PASTYOURKEY"
 
     application = ApplicationBuilder().token(TOKEN).build()
 
